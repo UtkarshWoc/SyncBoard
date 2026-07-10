@@ -99,7 +99,7 @@ const authController = {
    */
   async getMe(req, res) {
     try {
-      const user = await authService.findUserById(req.user.userId);
+      const user = await authService.findUserById(req.user.id);
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
