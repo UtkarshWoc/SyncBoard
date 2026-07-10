@@ -141,6 +141,14 @@ const authService = {
       return null;
     }
   },
+
+  /**
+   * Verify JWT token
+   */
+  verifyToken(token) {
+    return jwt.verify(token, env.JWT_SECRET);
+  },
 };
 
 module.exports = authService;
+
