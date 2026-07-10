@@ -22,9 +22,20 @@ const io = new Server(server, {
 initializeSocket(io);
 
 const connectDB = require('./src/config/db');
+const Room = require('./src/models/Room');
 
 // ─── Start Server ────────────────────────────────────────────
-connectDB().then(() => {
+connectDB().then(async () => {
+  try {
+    // Clear any stale active rooms that were left open from a previous crash/restart
+    const result = await Room.updateMany({ isActive: true }, { $set: { isActive: false } });
+    if (result.modifiedCount > 0) {
+      logger.info(`Cleaned up ${result.modifiedCount} stale active room(s) from previous session.`);
+    }
+  } catch (err) {
+    logger.error(`Error cleaning up stale rooms: ${err.message}`);
+  }
+
   server.listen(env.PORT, () => {
     logger.info(`🚀 SyncBoard server running on port ${env.PORT}`);
     logger.info(`📡 Socket.IO ready | CORS: ${env.CORS_ORIGIN}`);
