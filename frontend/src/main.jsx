@@ -27,19 +27,8 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-let App;
-try {
-  App = (await import('./App')).default;
-} catch (err) {
-  console.error('Import error:', err);
-  App = () => (
-    <div style={{ color: 'red', background: '#111', padding: '2rem', fontFamily: 'monospace' }}>
-      <h1>Import Error</h1>
-      <pre>{err?.toString()}</pre>
-      <pre>{err?.stack}</pre>
-    </div>
-  );
-}
+import App from './App';
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
