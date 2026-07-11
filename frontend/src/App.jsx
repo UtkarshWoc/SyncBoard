@@ -6,6 +6,8 @@ import env from './config/env';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 import Whiteboard from './pages/Whiteboard';
+import { Analytics } from '@vercel/analytics/react';
+
 
 /**
  * Protected route — redirects to /auth if not logged in
@@ -57,12 +59,14 @@ export default function App() {
   const googleClientId = env.GOOGLE_CLIENT_ID;
   const hasGoogleId = googleClientId && googleClientId !== 'your-google-client-id-here';
 
+
   const appContent = (
     <AuthProvider>
       <SocketProvider>
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
+        <Analytics />
       </SocketProvider>
     </AuthProvider>
   );

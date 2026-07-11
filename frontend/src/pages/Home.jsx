@@ -306,9 +306,7 @@ export default function Home() {
           </section>
         )}
 
-        <footer className="home-footer">
-          <p>Built with React.js • Node.js • Socket.IO • HTML5 Canvas</p>
-        </footer>
+
       </div>
     </div>
   );
