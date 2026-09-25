@@ -80,27 +80,14 @@ export default function Auth() {
 
   return (
     <div className="auth-page">
-      {/* Animated background */}
-      <div className="home-bg">
-        <div className="bg-orb bg-orb-1"></div>
-        <div className="bg-orb bg-orb-2"></div>
-        <div className="bg-orb bg-orb-3"></div>
-      </div>
-
       <div className="auth-container">
         {/* Logo */}
         <div className="logo-wrapper">
           <div className="logo-icon">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#logoGrad2)" />
+              <rect x="4" y="4" width="40" height="40" rx="12" fill="#FF2D2D" />
               <path d="M16 32L20 16L28 28L36 14" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M12 24H14M34 24H36M24 12V14M24 34V36" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-              <defs>
-                <linearGradient id="logoGrad2" x1="4" y1="4" x2="44" y2="44">
-                  <stop stopColor="#6C5CE7" />
-                  <stop offset="1" stopColor="#00CEC9" />
-                </linearGradient>
-              </defs>
+              <path d="M12 24H14M34 24H36M24 12V14M24 34V36" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.4" />
             </svg>
           </div>
           <h1 className="logo-text">{env.APP_NAME}</h1>
@@ -108,18 +95,18 @@ export default function Auth() {
         <p className="auth-subtitle">Sign in to start collaborating in real-time</p>
 
         {/* Auth Card */}
-        <div className="auth-card" id="auth-card">
+        <div className="auth-card glass" id="auth-card">
           {/* Mode tabs */}
-          <div className="mode-tabs" id="auth-tabs">
+          <div className="tabs" id="auth-tabs">
             <button
-              className={`mode-tab ${mode === 'login' ? 'active' : ''}`}
+              className={`tab ${mode === 'login' ? 'active' : ''}`}
               onClick={() => { setMode('login'); setError(''); }}
               id="tab-login"
             >
               Sign In
             </button>
             <button
-              className={`mode-tab ${mode === 'signup' ? 'active' : ''}`}
+              className={`tab ${mode === 'signup' ? 'active' : ''}`}
               onClick={() => { setMode('signup'); setError(''); }}
               id="tab-signup"
             >
@@ -130,12 +117,13 @@ export default function Auth() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="auth-form">
             {mode === 'signup' && (
-              <div className="input-group" id="name-group">
-                <label htmlFor="auth-name">Display Name</label>
+              <div id="name-group">
+                <label className="label" htmlFor="auth-name">Display Name</label>
                 <div className="input-icon-wrapper">
-                  <HiOutlineUser className="input-icon" />
+                  <HiOutlineUser className="icon" />
                   <input
                     id="auth-name"
+                    className="input"
                     type="text"
                     placeholder="Your display name"
                     value={displayName}
@@ -147,12 +135,13 @@ export default function Auth() {
               </div>
             )}
 
-            <div className="input-group">
-              <label htmlFor="auth-email">Email</label>
+            <div>
+              <label className="label" htmlFor="auth-email">Email</label>
               <div className="input-icon-wrapper">
-                <HiOutlineEnvelope className="input-icon" />
+                <HiOutlineEnvelope className="icon" />
                 <input
                   id="auth-email"
+                  className="input"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
@@ -163,12 +152,13 @@ export default function Auth() {
               </div>
             </div>
 
-            <div className="input-group">
-              <label htmlFor="auth-password">Password</label>
+            <div>
+              <label className="label" htmlFor="auth-password">Password</label>
               <div className="input-icon-wrapper">
-                <HiOutlineLockClosed className="input-icon" />
+                <HiOutlineLockClosed className="icon" />
                 <input
                   id="auth-password"
+                  className="input"
                   type={showPassword ? 'text' : 'password'}
                   placeholder={mode === 'signup' ? 'Min 6 characters' : 'Enter your password'}
                   value={password}
@@ -190,9 +180,10 @@ export default function Auth() {
 
             <button
               type="submit"
-              className="primary-btn"
+              className="btn btn-primary"
               disabled={isSubmitting}
               id="auth-submit-btn"
+              style={{ width: '100%' }}
             >
               {isSubmitting
                 ? 'Please wait...'
@@ -202,7 +193,7 @@ export default function Auth() {
             </button>
           </form>
 
-          {error && <p className="error-msg" id="auth-error">{error}</p>}
+          {error && <p className="error" id="auth-error">{error}</p>}
 
           {/* Divider */}
           <div className="auth-divider">

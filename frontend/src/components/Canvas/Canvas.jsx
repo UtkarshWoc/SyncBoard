@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useSocket } from '../../context/SocketContext';
+import { useTheme } from '../../context/ThemeContext';
 import {
   TOOLS,
   DEFAULT_LINE_WIDTH,
@@ -12,9 +13,12 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const { socket } = useSocket();
+  const { theme } = useTheme();
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentElement, setCurrentElement] = useState(null);
   const remoteDrawing = useRef({});
+
+  const getCanvasBgColor = () => theme === 'light' ? '#e9ecef' : '#0e0e0e';
 
   // Initialize canvas
   useEffect(() => {
@@ -24,7 +28,7 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
     canvas.height = container.clientHeight;
 
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#1a1a2e';
+    ctx.fillStyle = getCanvasBgColor();
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctxRef.current = ctx;
 
@@ -33,19 +37,19 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
       ctx.putImageData(imageData, 0, 0);
-      redrawCanvas(ctx, canvas, elements);
+      redrawCanvas(ctx, canvas, elements, getCanvasBgColor());
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [theme]);
 
-  // Redraw when elements change
+  // Redraw when elements or theme change
   useEffect(() => {
     if (ctxRef.current && canvasRef.current) {
-      redrawCanvas(ctxRef.current, canvasRef.current, elements);
+      redrawCanvas(ctxRef.current, canvasRef.current, elements, getCanvasBgColor());
     }
-  }, [elements]);
+  }, [elements, theme]);
 
   // Socket listeners for remote drawing
   useEffect(() => {
@@ -72,17 +76,17 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
       if (remote.tool === TOOLS.PENCIL || remote.tool === TOOLS.ERASER) {
         remote.points.push({ x: data.x, y: data.y });
         // Redraw everything + in-progress remote strokes
-        redrawCanvas(ctx, canvas, elements);
+        redrawCanvas(ctx, canvas, elements, getCanvasBgColor());
         // Draw all in-progress remote strokes
         Object.values(remoteDrawing.current).forEach((r) => {
-          drawElement(ctx, { ...r, endX: data.x, endY: data.y });
+          drawElement(ctx, { ...r, endX: data.x, endY: data.y }, getCanvasBgColor());
         });
       } else {
         remote.endX = data.x;
         remote.endY = data.y;
-        redrawCanvas(ctx, canvas, elements);
+        redrawCanvas(ctx, canvas, elements, getCanvasBgColor());
         Object.values(remoteDrawing.current).forEach((r) => {
-          if (r.endX !== undefined) drawElement(ctx, r);
+          if (r.endX !== undefined) drawElement(ctx, r, getCanvasBgColor());
         });
       }
     });
@@ -165,11 +169,11 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
       setCurrentElement(updated);
 
       // Redraw everything + current in-progress element
-      redrawCanvas(ctx, canvas, elements);
-      drawElement(ctx, updated);
+      redrawCanvas(ctx, canvas, elements, getCanvasBgColor());
+      drawElement(ctx, updated, getCanvasBgColor());
       // Also draw remote in-progress strokes
       Object.values(remoteDrawing.current).forEach((r) => {
-        if (r.endX !== undefined) drawElement(ctx, r);
+        if (r.endX !== undefined) drawElement(ctx, r, getCanvasBgColor());
       });
 
       socket?.emit('draw:move', { x, y });
@@ -196,7 +200,7 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
     <canvas
       ref={canvasRef}
       id="whiteboard-canvas"
-      className="whiteboard-canvas"
+      className={`whiteboard-canvas ${tool === TOOLS.ERASER ? 'eraser' : ''}`}
       onMouseDown={handleStart}
       onMouseMove={handleMove}
       onMouseUp={handleEnd}
@@ -204,7 +208,6 @@ export default function Canvas({ tool, color, lineWidth, elements, setElements }
       onTouchStart={handleStart}
       onTouchMove={handleMove}
       onTouchEnd={handleEnd}
-      style={{ cursor: tool === TOOLS.ERASER ? 'cell' : 'crosshair' }}
     />
   );
 }

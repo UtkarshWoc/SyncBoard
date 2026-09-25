@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════════════════════
+   HOME PAGE
+   ═══════════════════════════════════════════════════════════ */
+
+.home-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow-y: auto; padding: 2rem;
+}
+
+/* ── Top Nav ──────────────────────────────────── */
+.home-top-nav {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 36px; z-index: 10;
+}
+.home-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 500;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+}
+.home-status.connected { color: var(--success); border-color: rgba(34,197,94,0.3); }
+.home-status.disconnected { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+
+.user-badge {
+  display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 12px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 24px;
+}
+.user-badge-avatar {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; overflow: hidden;
+}
+.user-badge-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-badge-name { font-size: 0.84rem; font-weight: 600; color: var(--txt-primary); }
+.logout-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent;
+  color: var(--txt-muted); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--ease);
+}
+.logout-btn:hover { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+/* ── Hero ──────────────────────────────────────── */
+.home-container {
+  position: relative; z-index: 1; width: 100%; max-width: 500px;
+  display: flex; flex-direction: column; align-items: center; gap: 1.8rem;
+}
+.home-hero { text-align: center; }
+.logo-wrapper { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 10px; }
+.logo-icon svg { width: 44px; height: 44px; }
+.logo-text { font-size: 2rem; font-weight: 800; color: var(--txt-primary); letter-spacing: -0.5px; }
+.home-subtitle { color: var(--txt-secondary); font-size: 0.95rem; line-height: 1.6; }
+
+/* ── Main Card ─────────────────────────────────── */
+.home-card {
+  width: 100%; padding: 2rem;
+}
+
+/* Visibility Toggle */
+.visibility-toggle { display: flex; gap: 10px; margin-bottom: 1.2rem; }
+.visibility-option { flex: 1; }
+.visibility-card {
+  display: flex; align-items: center; gap: 10px; padding: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius-md);
+  cursor: pointer; transition: all var(--ease);
+}
+.visibility-card:hover { background: rgba(255,255,255,0.06); }
+.visibility-card.active { background: var(--accent-dim); border-color: var(--accent); }
+.visibility-icon { font-size: 1.3rem; color: var(--txt-muted); }
+.visibility-card.active .visibility-icon { color: var(--accent); }
+.visibility-label { display: block; font-size: 0.84rem; font-weight: 600; color: var(--txt-primary); }
+.visibility-desc { display: block; font-size: 0.68rem; color: var(--txt-muted); }
+
+/* ── Active Rooms ──────────────────────────────── */
+.active-rooms { width: 100%; }
+.active-rooms h2 { font-size: 1rem; margin-bottom: 0.8rem; color: var(--txt-secondary); font-weight: 600; }
+.rooms-grid { display: flex; flex-direction: column; gap: 8px; }
+.room-card {
+  background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 14px 18px; backdrop-filter: blur(10px); transition: all var(--ease);
+}
+.room-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.room-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.room-name { font-weight: 600; font-size: 0.92rem; }
+.room-card-badges { display: flex; align-items: center; gap: 8px; }
+.room-visibility-badge {
+  display: flex; align-items: center; gap: 4px; font-size: 0.68rem; padding: 3px 6px;
+  border-radius: 4px; background: rgba(255,255,255,0.08); color: var(--txt-secondary); font-weight: 600;
+}
+.room-visibility-badge.public { background: rgba(34,197,94,0.15); color: var(--success); }
+.room-code { font-size: 0.72rem; color: var(--accent); background: var(--accent-dim); padding: 3px 8px; border-radius: 6px; font-family: monospace; }
+.room-card-body { display: flex; justify-content: space-between; align-items: center; }
+.room-users { font-size: 0.8rem; color: var(--txt-secondary); }
+.room-join-btn {
+  background: none; border: 1px solid var(--accent); color: var(--accent);
+  padding: 5px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all var(--ease); font-family: var(--font);
+}
+.room-join-btn:hover { background: var(--accent); color: #fff; }
+
+@media (max-width: 600px) {
+  .home-top-nav { padding: 14px 16px; }
+  .home-container { max-width: 100%; padding: 0 0.5rem; }
+  .home-card { padding: 1.4rem; }
+  .visibility-toggle { flex-direction: column; }
+}

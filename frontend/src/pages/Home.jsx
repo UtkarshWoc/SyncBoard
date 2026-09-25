@@ -11,6 +11,7 @@ import {
   HiOutlineArrowRightStartOnRectangle,
   HiOutlineGlobeAlt,
   HiOutlineLockClosed,
+  HiOutlineUserCircle,
 } from 'react-icons/hi2';
 
 export default function Home() {
@@ -49,9 +50,14 @@ export default function Home() {
   const handleCreate = () => {
     setError('');
 
+    if (!roomName.trim()) {
+      setError('Please enter a room name');
+      return;
+    }
+
     socket.emit(
       'room:create',
-      { roomName: roomName.trim() || undefined, username, isPublic },
+      { roomName: roomName.trim(), username, isPublic },
       (response) => {
         if (response.success) {
           navigate(`/board/${response.data.room.id}`, {
@@ -114,11 +120,11 @@ export default function Home() {
     <div className="home-page">
       {/* Top Nav for Profile */}
       <nav className="home-top-nav">
-        <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
+        <div className={`home-status ${isConnected ? 'connected' : 'disconnected'}`}>
           <HiOutlineSignal />
           <span>{isConnected ? 'Connected' : 'Connecting...'}</span>
         </div>
-        
+
         <div className="user-badge" id="user-badge">
           <div className="user-badge-avatar">
             {user?.avatarUrl ? (
@@ -136,15 +142,17 @@ export default function Home() {
           >
             <HiOutlineArrowRightStartOnRectangle />
           </button>
+          <button
+            className="logout-btn"
+            onClick={() => navigate('/profile')}
+            title="Profile"
+            id="profile-btn"
+            style={{ marginLeft: 4 }}
+          >
+            <HiOutlineUserCircle />
+          </button>
         </div>
       </nav>
-
-      {/* Animated background */}
-      <div className="home-bg">
-        <div className="bg-orb bg-orb-1"></div>
-        <div className="bg-orb bg-orb-2"></div>
-        <div className="bg-orb bg-orb-3"></div>
-      </div>
 
       <div className="home-container">
         {/* Hero Section */}
@@ -152,15 +160,9 @@ export default function Home() {
           <div className="logo-wrapper">
             <div className="logo-icon">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#logoGrad)" />
+                <rect x="4" y="4" width="40" height="40" rx="12" fill="#FF2D2D" />
                 <path d="M16 32L20 16L28 28L36 14" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 24H14M34 24H36M24 12V14M24 34V36" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-                <defs>
-                  <linearGradient id="logoGrad" x1="4" y1="4" x2="44" y2="44">
-                    <stop stopColor="#6C5CE7" />
-                    <stop offset="1" stopColor="#00CEC9" />
-                  </linearGradient>
-                </defs>
+                <path d="M12 24H14M34 24H36M24 12V14M24 34V36" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.4" />
               </svg>
             </div>
             <h1 className="logo-text">{env.APP_NAME}</h1>
@@ -171,18 +173,18 @@ export default function Home() {
         </header>
 
         {/* Main Card */}
-        <main className="home-card" id="home-card">
+        <main className="home-card glass" id="home-card">
           {/* Mode tabs */}
-          <div className="mode-tabs" id="mode-tabs">
+          <div className="tabs" id="mode-tabs">
             <button
-              className={`mode-tab ${mode === 'create' ? 'active' : ''}`}
+              className={`tab ${mode === 'create' ? 'active' : ''}`}
               onClick={() => { setMode('create'); setError(''); }}
               id="tab-create"
             >
               <HiOutlinePlus /> Create Room
             </button>
             <button
-              className={`mode-tab ${mode === 'join' ? 'active' : ''}`}
+              className={`tab ${mode === 'join' ? 'active' : ''}`}
               onClick={() => { setMode('join'); setError(''); }}
               id="tab-join"
             >
@@ -192,11 +194,12 @@ export default function Home() {
 
           {/* Create room form */}
           {mode === 'create' && (
-            <div className="form-section" id="create-section">
-              <div className="input-group">
-                <label htmlFor="room-name-input">Room Name</label>
+            <div className="fade-in" id="create-section" style={{ marginTop: '1.2rem' }}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="label" htmlFor="room-name-input">Room Name</label>
                 <input
                   id="room-name-input"
+                  className="input"
                   type="text"
                   placeholder="My Awesome Board"
                   value={roomName}
@@ -235,9 +238,10 @@ export default function Home() {
 
               <button
                 id="create-room-btn"
-                className="primary-btn"
+                className="btn btn-primary"
                 onClick={handleCreate}
                 disabled={!isConnected}
+                style={{ width: '100%' }}
               >
                 <HiOutlinePlus /> Create & Enter
               </button>
@@ -246,11 +250,12 @@ export default function Home() {
 
           {/* Join room form */}
           {mode === 'join' && (
-            <div className="form-section" id="join-section">
-              <div className="input-group">
-                <label htmlFor="join-code-input">Room Code</label>
+            <div className="fade-in" id="join-section" style={{ marginTop: '1.2rem' }}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="label" htmlFor="join-code-input">Room Code</label>
                 <input
                   id="join-code-input"
+                  className="input"
                   type="text"
                   placeholder="e.g. A1B2C3D4"
                   value={joinCode}
@@ -261,16 +266,17 @@ export default function Home() {
               </div>
               <button
                 id="join-room-btn"
-                className="primary-btn join-btn"
+                className="btn btn-primary"
                 onClick={handleJoin}
                 disabled={!isConnected}
+                style={{ width: '100%' }}
               >
                 <HiOutlineArrowRightOnRectangle /> Join Room
               </button>
             </div>
           )}
 
-          {error && <p className="error-msg" id="error-message">{error}</p>}
+          {error && <p className="error" id="error-message">{error}</p>}
         </main>
 
         {/* Active Public Rooms */}

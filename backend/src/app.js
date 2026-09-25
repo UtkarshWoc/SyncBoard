@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const env = require('./config/env');
 const roomRoutes = require('./routes/roomRoutes');
 const authRoutes = require('./routes/authRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
@@ -25,6 +26,7 @@ app.get('/api/health', (req, res) => {
 // ─── API Routes ──────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/profile', profileRoutes);
 
 // ─── Error Handling ──────────────────────────────────────────
 app.use(notFound);

@@ -34,6 +34,11 @@ const roomController = {
   async createRoom(req, res) {
     try {
       const { name, isPublic } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({ success: false, message: 'Room name is required' });
+      }
+
       const room = await roomService.createRoom(name, { isPublic });
       res.status(201).json({ success: true, data: room });
     } catch (err) {

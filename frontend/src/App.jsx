@@ -2,9 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { SocketProvider } from './context/SocketContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import env from './config/env';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 import Whiteboard from './pages/Whiteboard';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -17,8 +19,8 @@ function ProtectedRoute({ children }) {
 
   if (isLoading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-spinner"></div>
+      <div className="loading">
+        <div className="spinner"></div>
         <p>Loading...</p>
       </div>
     );
@@ -35,6 +37,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/auth" element={<Auth />} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route
         path="/"
         element={
@@ -62,13 +65,15 @@ export default function App() {
 
   const appContent = (
     <AuthProvider>
-      <SocketProvider>
+      <ThemeProvider>
+        <SocketProvider>
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
         <Analytics />
       </SocketProvider>
-    </AuthProvider>
+    </ThemeProvider>
+  </AuthProvider>
   );
 
   // Only wrap with GoogleOAuthProvider if a valid client ID is configured

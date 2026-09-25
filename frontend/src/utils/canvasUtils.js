@@ -10,9 +10,9 @@ export const TOOLS = {
 };
 
 export const DEFAULT_COLORS = [
-  '#FFFFFF', '#FF6B6B', '#4ECDC4', '#45B7D1',
-  '#96CEB4', '#FFEAA7', '#DDA0DD', '#FF8C42',
-  '#6C5CE7', '#00CEC9', '#FD79A8', '#A29BFE',
+  '#FFFFFF', '#FF2D2D', '#888888', '#444444',
+  '#CCCCCC', '#FF6B6B', '#22c55e', '#f59e0b',
+  '#666666', '#999999', '#d41f1f', '#aaaaaa',
 ];
 
 export const DEFAULT_LINE_WIDTH = 3;
@@ -21,7 +21,7 @@ export const ERASER_LINE_WIDTH = 20;
 /**
  * Draw a single element on canvas context
  */
-export function drawElement(ctx, element) {
+export function drawElement(ctx, element, bgColor = '#0e0e0e') {
   if (!element) return;
 
   ctx.strokeStyle = element.color || '#FFFFFF';
@@ -40,7 +40,7 @@ export function drawElement(ctx, element) {
       drawLine(ctx, element);
       break;
     case TOOLS.ERASER:
-      ctx.strokeStyle = '#1a1a2e';
+      ctx.strokeStyle = bgColor;
       ctx.lineWidth = element.lineWidth || ERASER_LINE_WIDTH;
       drawPencil(ctx, element.points);
       break;
@@ -77,9 +77,9 @@ function drawLine(ctx, element) {
 /**
  * Redraw entire canvas from elements array
  */
-export function redrawCanvas(ctx, canvas, elements) {
+export function redrawCanvas(ctx, canvas, elements, bgColor = '#0e0e0e') {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#1a1a2e';
+  ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  elements.forEach((el) => drawElement(ctx, el));
+  elements.forEach((el) => drawElement(ctx, el, bgColor));
 }
