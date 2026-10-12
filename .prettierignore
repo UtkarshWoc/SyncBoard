@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+graphify-out
+package-lock.json
+e2e/test-results
+e2e/playwright-report

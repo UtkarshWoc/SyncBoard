@@ -9,6 +9,13 @@ node_modules/
 # Build output
 dist/
 build/
+coverage/
+*.tsbuildinfo
+
+# Playwright
+e2e/test-results/
+e2e/playwright-report/
+e2e/.auth/
 
 # Logs
 *.log

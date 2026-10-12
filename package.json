@@ -1,5 +1,35 @@
 {
-  "dependencies": {
-    "@vercel/analytics": "^2.0.1"
+  "name": "syncboard",
+  "private": true,
+  "description": "SyncBoard — real-time collaborative whiteboard for tutoring and teaching",
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend",
+    "e2e"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "postinstall": "npm run build -w @syncboard/shared",
+    "dev": "npm run build -w @syncboard/shared && concurrently -n api,web -c red,gray \"npm run dev -w @syncboard/backend\" \"npm run dev -w @syncboard/frontend\"",
+    "build": "npm run build -w @syncboard/shared && npm run build -w @syncboard/backend && npm run build -w @syncboard/frontend",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test -w @syncboard/e2e-tests"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^16.5.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
   }
 }
