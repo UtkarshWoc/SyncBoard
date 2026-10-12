@@ -21,7 +21,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
-    "test:e2e": "npm run test -w @syncboard/e2e-tests"
+    "test:e2e": "npm run e2e -w @syncboard/e2e-tests"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
