@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-const dbPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.dev-db');
+const dbPath = process.env.DEV_DB_PATH ?? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.dev-db');
 mkdirSync(dbPath, { recursive: true });
 
 const port = Number(process.env.DEV_DB_PORT ?? 27017);

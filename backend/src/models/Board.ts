@@ -34,7 +34,7 @@ const boardSchema = new Schema(
     listed: { type: Boolean, default: false },
     generalAccess: { type: String, enum: ['restricted', 'viewer', 'editor'], default: 'restricted' },
     passwordHash: { type: String, default: null },
-    background: { type: String, enum: ['plain', 'grid', 'dots'], default: 'plain' },
+    background: { type: String, enum: ['plain', 'grid'], default: 'plain' },
     members: { type: [memberSchema], default: [] },
     invites: { type: [inviteSchema], default: [] },
     mutedUserIds: { type: [Schema.Types.ObjectId], default: [] },

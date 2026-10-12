@@ -30,3 +30,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Local browser automation artifacts
+.playwright-mcp/
+backend/.dev-db/

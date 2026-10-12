@@ -18,7 +18,7 @@ export const displayNameSchema = trimmed(LIMITS.DISPLAY_NAME_MAX);
 
 export const generalAccessSchema = z.enum(['restricted', 'viewer', 'editor']);
 export const memberRoleSchema = z.enum(['editor', 'viewer']);
-export const backgroundSchema = z.enum(['plain', 'grid', 'dots']);
+export const backgroundSchema = z.enum(['plain', 'grid']);
 
 // ─── Auth ──────────────────────────────────────────────────────
 export const registerSchema = z.object({

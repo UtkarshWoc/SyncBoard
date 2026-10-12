@@ -1,13 +1,7 @@
-/* ═══════════════════════════════════════════════════════════
-   SyncBoard — Main Stylesheet
-   Imports design tokens + all modular stylesheets
-   Palette: black / grey / red
-   ═══════════════════════════════════════════════════════════ */
-
-@import 'tokens.css';
-@import 'shared.css';
-@import 'home.css';
-@import 'auth.css';
-@import 'whiteboard.css';
-@import 'components.css';
-@import 'profile.css';
+/* SyncBoard — palette: black / grey / red, with light & dark themes. */
+@import './tokens.css';
+@import './base.css';
+@import './auth.css';
+@import './dashboard.css';
+@import './profile.css';
+@import './board.css';

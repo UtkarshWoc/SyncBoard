@@ -33,7 +33,7 @@ export interface UserStats {
   timeCollaboratingMs: number;
 }
 
-export type BoardBackground = 'plain' | 'grid' | 'dots';
+export type BoardBackground = 'plain' | 'grid';
 
 export interface BoardSummary {
   id: string;
