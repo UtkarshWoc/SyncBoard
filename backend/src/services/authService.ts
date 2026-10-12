@@ -135,12 +135,21 @@ export async function googleSignIn(credential: string, meta: ClientMeta): Promis
     logger.info({ userId: user.id }, 'User registered via Google');
   } else {
     let dirty = false;
-    if (!user.googleId) {
-      user.googleId = payload.sub;
+    if (!user.emailVerified) {
+      // Nobody ever proved they own this address, so a password on the account may have been set
+      // by someone squatting the email. Google has now proven ownership: drop that password and
+      // every session created with it before handing the account to the Google user.
+      if (user.passwordHash) {
+        user.passwordHash = null;
+        await Session.updateMany({ userId: user._id, revokedAt: null }, { $set: { revokedAt: new Date() } });
+        await AuthToken.deleteMany({ userId: user._id });
+        logger.warn({ userId: user.id }, 'Cleared unverified password while linking Google account');
+      }
+      user.emailVerified = true;
       dirty = true;
     }
-    if (!user.emailVerified) {
-      user.emailVerified = true;
+    if (!user.googleId) {
+      user.googleId = payload.sub;
       dirty = true;
     }
     if (!user.avatarUrl && payload.picture) {
@@ -220,7 +229,16 @@ export async function resetPassword(token: string, password: string): Promise<vo
   await logoutAll(record.userId.toString());
 }
 
-export async function changePassword(userId: string, currentPassword: string | undefined, newPassword: string) {
+/**
+ * Change (or set, for Google-only accounts) the password. Every existing session is revoked so a
+ * stolen session can't outlive the change; the caller gets a fresh one.
+ */
+export async function changePassword(
+  userId: string,
+  currentPassword: string | undefined,
+  newPassword: string,
+  meta: ClientMeta,
+): Promise<IssuedTokens> {
   const user = await User.findById(userId);
   if (!user) throw notFound('User not found');
   if (user.passwordHash) {
@@ -230,4 +248,7 @@ export async function changePassword(userId: string, currentPassword: string | u
   }
   user.passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
   await user.save();
+  await logoutAll(userId);
+  await AuthToken.deleteMany({ userId: user._id, type: 'reset-password' });
+  return createSession(user, meta);
 }

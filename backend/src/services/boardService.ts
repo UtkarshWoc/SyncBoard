@@ -12,6 +12,7 @@ import type {
   UpdateBoardInput,
 } from '@syncboard/shared';
 import { env } from '../config/env.js';
+import { AttemptLimiter } from '../lib/attemptLimiter.js';
 import { newBoardId, randomToken } from '../lib/crypto.js';
 import { HttpError, badRequest, forbidden, notFound } from '../lib/errors.js';
 import { iso, toPublicUser } from '../lib/serialize.js';
@@ -182,11 +183,23 @@ export async function deleteBoard(boardId: string): Promise<void> {
  * Unlock a password-protected board. On success the user becomes a member with
  * the board's general-access role, so they aren't asked again.
  */
+// Board passwords are short and shared out loud in class, so guesses are tightly capped:
+// per user per board, and per board across all users (to blunt multi-account guessing).
+const userBoardAttempts = new AttemptLimiter(5, 15 * 60_000);
+const boardAttempts = new AttemptLimiter(50, 60 * 60_000);
+
 export async function unlockWithPassword(board: BoardDoc, userId: string, password: string): Promise<Role> {
   if (!board.passwordHash || board.generalAccess === 'restricted') throw forbidden();
+  const userKey = `${userId}:${board._id}`;
+  const tooMany = 'Too many incorrect passwords — try again later or ask the owner for an invite link';
+  userBoardAttempts.assertAllowed(userKey, tooMany);
+  boardAttempts.assertAllowed(board._id, tooMany);
   if (!(await bcrypt.compare(password, board.passwordHash))) {
+    userBoardAttempts.fail(userKey);
+    boardAttempts.fail(board._id);
     throw new HttpError(403, 'INVALID_PASSWORD', 'Incorrect board password');
   }
+  userBoardAttempts.reset(userKey);
   const role = board.generalAccess as MemberRole;
   await Board.updateOne(
     { _id: board._id, 'members.userId': { $ne: new Types.ObjectId(userId) } },

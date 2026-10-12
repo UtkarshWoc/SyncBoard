@@ -10,6 +10,7 @@ export default defineConfig({
       JWT_ACCESS_SECRET: 'test-secret-that-is-long-enough-for-tests-0123456789',
       CORS_ORIGIN: 'http://localhost:5173',
       APP_URL: 'http://localhost:5173',
+      GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com',
     },
     testTimeout: 20_000,
     hookTimeout: 120_000,

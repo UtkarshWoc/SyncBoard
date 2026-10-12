@@ -98,6 +98,5 @@ authRouter.post('/reset-password', authLimiter, validateBody(resetPasswordSchema
 });
 
 authRouter.post('/change-password', requireAuth, authLimiter, validateBody(changePasswordSchema), async (req, res) => {
-  await auth.changePassword(uid(req), req.body.currentPassword, req.body.newPassword);
-  res.status(204).end();
+  respond(res, await auth.changePassword(uid(req), req.body.currentPassword, req.body.newPassword, meta(req)));
 });

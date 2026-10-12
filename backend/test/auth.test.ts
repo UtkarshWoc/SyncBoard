@@ -134,7 +134,7 @@ describe('email verification and password reset', () => {
       .post('/api/auth/change-password')
       .set(u.auth)
       .send({ currentPassword: 'correct horse battery', newPassword: 'another long password' })
-      .expect(204);
+      .expect(200);
   });
 });
 

@@ -15,7 +15,7 @@ import * as boards from '../../services/boardService.js';
 import * as scene from '../../services/sceneService.js';
 import * as versions from '../../services/versionService.js';
 import { requireAuth, uid } from '../middleware/auth.js';
-import { uploadLimiter } from '../middleware/rateLimit.js';
+import { authLimiter, uploadLimiter } from '../middleware/rateLimit.js';
 import { validateBody } from '../middleware/validate.js';
 
 const param = (req: Request, name: string) => {
@@ -55,12 +55,17 @@ export function boardsRouter(realtime: Realtime) {
     res.json(await boards.details(board, uid(req)));
   });
 
-  router.post('/:id/unlock', validateBody(z.object({ password: z.string().min(1).max(64) })), async (req, res) => {
-    const board = await boards.getBoard(param(req, 'id'));
-    const existing = boards.resolveAccess(board, uid(req)).role;
-    const role = existing ?? (await boards.unlockWithPassword(board, uid(req), req.body.password));
-    res.json({ role });
-  });
+  router.post(
+    '/:id/unlock',
+    authLimiter,
+    validateBody(z.object({ password: z.string().min(1).max(64) })),
+    async (req, res) => {
+      const board = await boards.getBoard(param(req, 'id'));
+      const existing = boards.resolveAccess(board, uid(req)).role;
+      const role = existing ?? (await boards.unlockWithPassword(board, uid(req), req.body.password));
+      res.json({ role });
+    },
+  );
 
   router.patch('/:id', validateBody(updateBoardSchema), async (req, res) => {
     const { board } = await boards.getBoardWithRole(param(req, 'id'), uid(req), 'owner');
