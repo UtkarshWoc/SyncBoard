@@ -142,7 +142,10 @@ export const rtcSignalSchema = z.object({
   to: z.string().min(1).max(64),
   data: z.union([
     z.object({
-      description: z.object({ type: z.enum(['offer', 'answer', 'pranswer', 'rollback']), sdp: z.string().max(100_000).optional() }),
+      description: z.object({
+        type: z.enum(['offer', 'answer', 'pranswer', 'rollback']),
+        sdp: z.string().max(100_000).optional(),
+      }),
     }),
     z.object({
       candidate: z
