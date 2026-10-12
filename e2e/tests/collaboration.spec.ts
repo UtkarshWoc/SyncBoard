@@ -8,7 +8,7 @@ test.describe('live tutoring session', () => {
 
     // Tutor creates an open-edit board from the dashboard.
     await tutor.page.goto('/');
-    await tutor.page.getByRole('button', { name: 'New board' }).click();
+    await tutor.page.locator('#new-board-btn').click();
     await tutor.page.getByLabel('Board name').fill('Algebra lesson');
     await tutor.page.getByRole('button', { name: 'Anyone can edit' }).click();
     await tutor.page.getByRole('button', { name: 'Create board' }).click();

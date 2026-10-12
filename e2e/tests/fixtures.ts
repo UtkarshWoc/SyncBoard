@@ -13,7 +13,7 @@ export interface Person {
 export async function signUp(browser: Browser, name: string): Promise<Person> {
   counter += 1;
   const email = `${name.toLowerCase()}-${Date.now()}-${counter}@e2e.test`;
-  const context = await browser.newContext();
+  const context = await browser.newContext({ permissions: ['microphone', 'camera'] });
   const page = await context.newPage();
   // Registering through the API sets the refresh cookie in this context.
   const res = await page.request.post('/api/auth/register', {
