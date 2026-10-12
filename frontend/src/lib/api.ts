@@ -101,6 +101,12 @@ export async function getFreshAccessToken(): Promise<string | null> {
   return payload?.accessToken ?? null;
 }
 
+/**
+ * Encode a value used as a URL path segment. Ids and tokens can come from the address bar
+ * (e.g. /invite/:token), so an unencoded `../` could point a request at a different endpoint.
+ */
+const seg = (value: string) => encodeURIComponent(value);
+
 interface RequestOptions {
   method?: string;
   body?: unknown;
@@ -207,46 +213,45 @@ export const api = {
   // ─── Boards ────────────────────────────────────────────────
   listBoards: () => request<BoardLists>('/boards'),
   createBoard: (input: CreateBoardInput) => request<BoardSummary>('/boards', { method: 'POST', body: input }),
-  getBoard: (id: string) => request<BoardDetails>(`/boards/${encodeURIComponent(id)}`),
+  getBoard: (id: string) => request<BoardDetails>(`/boards/${seg(id)}`),
   unlockBoard: (id: string, password: string) =>
-    request<{ role: Role }>(`/boards/${encodeURIComponent(id)}/unlock`, { method: 'POST', body: { password } }),
+    request<{ role: Role }>(`/boards/${seg(id)}/unlock`, { method: 'POST', body: { password } }),
   updateBoard: (id: string, input: UpdateBoardInput) =>
-    request<BoardDetails>(`/boards/${encodeURIComponent(id)}`, { method: 'PATCH', body: input }),
-  deleteBoard: (id: string) => request<void>(`/boards/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+    request<BoardDetails>(`/boards/${seg(id)}`, { method: 'PATCH', body: input }),
+  deleteBoard: (id: string) => request<void>(`/boards/${seg(id)}`, { method: 'DELETE' }),
   setThumbnail: (id: string, dataURL: string) =>
-    request<void>(`/boards/${encodeURIComponent(id)}/thumbnail`, { method: 'PUT', body: { dataURL } }),
+    request<void>(`/boards/${seg(id)}/thumbnail`, { method: 'PUT', body: { dataURL } }),
   setMemberRole: (id: string, userId: string, role: MemberRole) =>
-    request<BoardDetails>(`/boards/${encodeURIComponent(id)}/members/${userId}`, { method: 'PATCH', body: { role } }),
+    request<BoardDetails>(`/boards/${seg(id)}/members/${seg(userId)}`, { method: 'PATCH', body: { role } }),
   removeMember: (id: string, userId: string) =>
-    request<void>(`/boards/${encodeURIComponent(id)}/members/${userId}`, { method: 'DELETE' }),
+    request<void>(`/boards/${seg(id)}/members/${seg(userId)}`, { method: 'DELETE' }),
   createInvite: (id: string, role: MemberRole, expiresInDays: number | null) =>
-    request<{ token: string }>(`/boards/${encodeURIComponent(id)}/invites`, {
+    request<{ token: string }>(`/boards/${seg(id)}/invites`, {
       method: 'POST',
       body: { role, expiresInDays },
     }),
   revokeInvite: (id: string, token: string) =>
-    request<void>(`/boards/${encodeURIComponent(id)}/invites/${token}`, { method: 'DELETE' }),
-  previewInvite: (token: string) => request<InvitePreview>(`/invites/${token}`),
+    request<void>(`/boards/${seg(id)}/invites/${seg(token)}`, { method: 'DELETE' }),
+  previewInvite: (token: string) => request<InvitePreview>(`/invites/${seg(token)}`),
   acceptInvite: (token: string) =>
-    request<{ boardId: string; role: Role }>(`/invites/${token}/accept`, { method: 'POST' }),
+    request<{ boardId: string; role: Role }>(`/invites/${seg(token)}/accept`, { method: 'POST' }),
 
   // ─── Files ─────────────────────────────────────────────────
   uploadFile: (boardId: string, file: { id: string; mimeType: string; dataURL: string }) =>
-    request<{ id: string }>(`/boards/${encodeURIComponent(boardId)}/files`, { method: 'POST', body: file }),
-  getFile: (boardId: string, fileId: string) =>
-    request<StoredFile>(`/boards/${encodeURIComponent(boardId)}/files/${encodeURIComponent(fileId)}`),
+    request<{ id: string }>(`/boards/${seg(boardId)}/files`, { method: 'POST', body: file }),
+  getFile: (boardId: string, fileId: string) => request<StoredFile>(`/boards/${seg(boardId)}/files/${seg(fileId)}`),
 
   // ─── Versions ──────────────────────────────────────────────
-  listVersions: (boardId: string) => request<BoardVersionSummary[]>(`/boards/${encodeURIComponent(boardId)}/versions`),
+  listVersions: (boardId: string) => request<BoardVersionSummary[]>(`/boards/${seg(boardId)}/versions`),
   createVersion: (boardId: string, label?: string, thumbnail?: string) =>
-    request<BoardVersionSummary>(`/boards/${encodeURIComponent(boardId)}/versions`, {
+    request<BoardVersionSummary>(`/boards/${seg(boardId)}/versions`, {
       method: 'POST',
       body: { label: label || undefined, thumbnail },
     }),
   getVersion: (boardId: string, versionId: string) =>
-    request<BoardVersionDetail>(`/boards/${encodeURIComponent(boardId)}/versions/${versionId}`),
+    request<BoardVersionDetail>(`/boards/${seg(boardId)}/versions/${seg(versionId)}`),
   restoreVersion: (boardId: string, versionId: string) =>
-    request<{ changed: number }>(`/boards/${encodeURIComponent(boardId)}/versions/${versionId}/restore`, {
+    request<{ changed: number }>(`/boards/${seg(boardId)}/versions/${seg(versionId)}/restore`, {
       method: 'POST',
     }),
 };

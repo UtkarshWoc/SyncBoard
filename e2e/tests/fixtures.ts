@@ -40,8 +40,8 @@ export async function waitForCanvas(page: Page) {
 
 /** Draw a rectangle by dragging on the canvas with the rectangle tool. */
 export async function drawRectangle(page: Page, from: [number, number], to: [number, number]) {
-  await page.keyboard.press('Escape');
-  await page.keyboard.press('r');
+  // The test id sits on a visually hidden radio input; click its label.
+  await page.locator('label', { has: page.getByTestId('toolbar-rectangle') }).click();
   await page.mouse.move(...from);
   await page.mouse.down();
   await page.mouse.move((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, { steps: 4 });

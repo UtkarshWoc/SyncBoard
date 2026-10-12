@@ -21,12 +21,12 @@ test.describe('live tutoring session', () => {
     await waitForCanvas(student.page);
 
     // Tutor draws; student sees it.
-    await drawRectangle(tutor.page, [400, 300], [560, 420]);
+    await drawRectangle(tutor.page, [480, 220], [660, 340]);
     await expect.poll(() => sceneCount(tutor.page, 'rectangle')).toBe(1);
     await expect.poll(() => sceneCount(student.page, 'rectangle')).toBe(1);
 
     // Student draws; tutor sees it.
-    await drawRectangle(student.page, [650, 300], [760, 380]);
+    await drawRectangle(student.page, [760, 420], [920, 540]);
     await expect.poll(() => sceneCount(tutor.page, 'rectangle')).toBe(2);
 
     // Undo is per user: the student's undo removes only the student's rectangle.
