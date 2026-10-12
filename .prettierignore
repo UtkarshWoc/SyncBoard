@@ -5,3 +5,6 @@ graphify-out
 package-lock.json
 e2e/test-results
 e2e/playwright-report
+CLAUDE.md
+.claude
+.github
