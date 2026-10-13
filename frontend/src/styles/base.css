@@ -18,8 +18,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition:
-    background-color 0.25s ease,
-    color 0.25s ease;
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 a {
   color: var(--accent);
@@ -38,6 +38,14 @@ img {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ── Layout helpers ─────────────────────────────── */
@@ -76,17 +84,17 @@ img {
   color: var(--txt-secondary);
 }
 .small {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
 }
 .tiny {
-  font-size: 0.72rem;
+  font-size: 0.73rem;
 }
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 .hint {
   color: var(--txt-muted);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   margin-top: 6px;
 }
 .danger-text {
@@ -101,6 +109,8 @@ img {
 /* ── Surfaces ───────────────────────────────────── */
 .glass {
   background: var(--bg-surface);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -113,10 +123,11 @@ img {
   gap: 10px;
 }
 .logo-text {
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
   color: var(--txt-primary);
-  letter-spacing: -0.4px;
+  letter-spacing: -0.5px;
 }
 
 /* ── Buttons ────────────────────────────────────── */
@@ -125,7 +136,7 @@ img {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 18px;
+  padding: 10px 20px;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   font-size: 0.88rem;
@@ -137,16 +148,22 @@ img {
   text-decoration: none !important;
 }
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 .btn-primary {
   background: var(--accent);
   color: #fff;
+  border-color: var(--accent);
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
+  border-color: var(--accent-hover);
   box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 .btn-ghost {
   background: transparent;
@@ -168,8 +185,8 @@ img {
   color: #fff;
 }
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 0.78rem;
+  padding: 6px 14px;
+  font-size: 0.8rem;
   border-radius: var(--radius-sm);
 }
 .btn-block {
@@ -200,7 +217,7 @@ img {
 }
 .danger-hover:hover {
   color: var(--danger);
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(244, 63, 94, 0.1);
 }
 .link-btn {
   background: none;
@@ -215,13 +232,13 @@ img {
   color: var(--accent);
 }
 .link-sm {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 
 /* ── Forms ──────────────────────────────────────── */
 .input {
   width: 100%;
-  padding: 10px 13px;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--bg-inset);
@@ -229,25 +246,27 @@ img {
   font-family: var(--font);
   font-size: 0.9rem;
   outline: none;
-  transition: border-color var(--ease);
+  transition:
+    border-color var(--ease),
+    box-shadow var(--ease);
 }
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-dim);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .input::placeholder {
   color: var(--txt-muted);
 }
 .input:disabled {
-  opacity: 0.65;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 textarea.input {
   resize: vertical;
 }
 .input-sm {
-  padding: 6px 10px;
-  font-size: 0.82rem;
+  padding: 7px 11px;
+  font-size: 0.84rem;
   border-radius: var(--radius-sm);
 }
 .select {
@@ -256,12 +275,11 @@ textarea.input {
 }
 .label {
   display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.74rem;
+  font-weight: 600;
   color: var(--txt-secondary);
   margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.3px;
 }
 .label-row {
   display: flex;
@@ -305,9 +323,10 @@ textarea.input {
   background: transparent;
   border: none;
   color: var(--txt-secondary);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all var(--ease);
 }
 .segmented button + button {
   border-left: 1px solid var(--border);
@@ -336,7 +355,7 @@ textarea.input {
   background: transparent;
   border: none;
   color: var(--txt-secondary);
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -344,6 +363,7 @@ textarea.input {
   justify-content: center;
   gap: 6px;
   transition: all var(--ease);
+  position: relative;
 }
 .tab.active {
   background: var(--accent);
@@ -353,7 +373,7 @@ textarea.input {
   background: var(--bg-raised);
 }
 .tab-count {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   padding: 1px 7px;
   border-radius: 10px;
   background: rgba(127, 127, 127, 0.2);
@@ -370,9 +390,10 @@ textarea.input {
   background: var(--bg-raised);
   color: var(--txt-secondary);
   border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 0.76rem;
+  padding: 4px 12px;
+  font-size: 0.78rem;
   cursor: pointer;
+  transition: all var(--ease);
 }
 .chip:hover {
   border-color: var(--accent);
@@ -380,7 +401,7 @@ textarea.input {
 }
 .code-chip {
   font-family: ui-monospace, Menlo, Consolas, monospace;
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   color: var(--accent);
   background: var(--accent-dim);
   padding: 2px 8px;
@@ -399,16 +420,15 @@ button.code-chip {
   gap: 4px;
   font-size: 0.68rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  padding: 2px 7px;
-  border-radius: 5px;
+  letter-spacing: 0.3px;
+  padding: 3px 8px;
+  border-radius: 6px;
   background: var(--bg-raised);
   color: var(--txt-secondary);
   white-space: nowrap;
 }
 .access-chip.open {
-  background: rgba(34, 197, 94, 0.14);
+  background: rgba(52, 211, 153, 0.12);
   color: var(--success);
 }
 .kind-manual {
@@ -421,6 +441,7 @@ button.code-chip {
   border-radius: 50%;
   border: 2px solid var(--border);
   cursor: pointer;
+  transition: transform var(--ease-spring);
 }
 .swatch.active {
   border-color: var(--accent);
@@ -477,7 +498,17 @@ button.code-chip {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -485,7 +516,7 @@ button.code-chip {
   }
 }
 .fade-in {
-  animation: fadeIn 0.22s ease;
+  animation: fadeIn 0.25s ease;
 }
 .center-page {
   min-height: 100%;
@@ -506,6 +537,7 @@ button.code-chip {
   text-align: center;
 }
 .center-card h1 {
+  font-family: var(--font-display);
   font-size: 1.35rem;
 }
 .center-card .auth-form {
@@ -518,11 +550,14 @@ button.code-chip {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
+  animation: fadeIn 0.15s ease;
 }
 .modal {
   width: 100%;
@@ -543,7 +578,9 @@ button.code-chip {
   border-bottom: 1px solid var(--border);
 }
 .modal-header h2 {
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 .modal-body {
   padding: 20px;
@@ -573,15 +610,17 @@ button.code-chip {
 .toast {
   pointer-events: auto;
   background: var(--bg-raised);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
   color: var(--txt-primary);
   border: 1px solid var(--border-hover);
-  border-left: 4px solid var(--txt-muted);
+  border-left: 3px solid var(--txt-muted);
   border-radius: var(--radius-md);
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-size: 0.86rem;
   box-shadow: var(--shadow-lg);
   cursor: pointer;
-  animation: fadeIn 0.2s ease;
+  animation: slideUp 0.25s ease;
   max-width: min(90vw, 460px);
   text-align: left;
 }
@@ -605,6 +644,8 @@ button.code-chip {
   align-items: center;
   padding: 12px 28px;
   background: var(--bg-surface);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
   border-bottom: 1px solid var(--border);
 }
 .app-header-brand:hover {
@@ -650,15 +691,16 @@ button.code-chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 3px 10px 3px 3px;
+  padding: 3px 12px 3px 3px;
   border-radius: 24px;
   border: 1px solid var(--border);
   color: var(--txt-primary);
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   font-weight: 600;
+  transition: border-color var(--ease);
 }
 .user-chip:hover {
-  border-color: var(--accent);
+  border-color: var(--border-hover);
   text-decoration: none;
 }
 .banner {
@@ -669,12 +711,12 @@ button.code-chip {
   flex-wrap: wrap;
   padding: 10px 16px;
   font-size: 0.84rem;
-  background: rgba(245, 158, 11, 0.12);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(251, 191, 36, 0.1);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.2);
 }
 @media (max-width: 640px) {
   .app-header {
-    padding: 10px 14px;
+    padding: 10px 16px;
   }
   .user-chip-name,
   .conn-pill {

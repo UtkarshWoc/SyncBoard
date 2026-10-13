@@ -1,15 +1,16 @@
 .profile-content {
   max-width: 680px;
   margin: 0 auto;
-  padding: 24px 20px 64px;
+  padding: 28px 20px 64px;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  animation: fadeIn 0.3s ease;
 }
 .profile-card {
   display: flex;
-  gap: 18px;
-  padding: 1.5rem;
+  gap: 20px;
+  padding: 1.6rem;
   align-items: flex-start;
 }
 .profile-info {
@@ -22,13 +23,15 @@
   align-self: flex-start;
 }
 .profile-section {
-  padding: 1.4rem 1.5rem;
+  padding: 1.5rem;
 }
 .profile-section h2 {
+  font-family: var(--font-display);
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 600;
   margin-bottom: 1rem;
   color: var(--txt-secondary);
 }
@@ -44,29 +47,33 @@
   background: var(--bg-inset);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 14px 8px;
+  padding: 16px 8px;
   text-align: center;
+  transition: border-color var(--ease);
+}
+.stat-card:hover {
+  border-color: var(--border-hover);
 }
 .stat-value {
   display: block;
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--accent);
 }
 .stat-label {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--txt-muted);
   margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 .settings-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--border);
 }
 .settings-item:last-child {
@@ -78,11 +85,11 @@
   gap: 2px;
 }
 .settings-item-title {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 .settings-item-desc {
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   color: var(--txt-muted);
 }
 .toggle-switch {
@@ -103,7 +110,7 @@
   inset: 0;
   background: var(--border-hover);
   border-radius: 12px;
-  transition: var(--ease);
+  transition: background var(--ease);
 }
 .toggle-slider::before {
   content: '';
@@ -114,7 +121,8 @@
   bottom: 3px;
   background: #fff;
   border-radius: 50%;
-  transition: var(--ease);
+  transition: transform var(--ease);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .toggle-switch input:checked + .toggle-slider {
   background: var(--accent);
@@ -127,7 +135,7 @@
   outline-offset: 2px;
 }
 .danger-zone {
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(244, 63, 94, 0.2);
 }
 .danger-zone h2 {
   color: var(--danger);

@@ -7,7 +7,7 @@ import { initials } from '../lib/util';
 export function LogoMark({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" aria-hidden="true">
-      <rect x="4" y="4" width="40" height="40" rx="12" fill="#FF2D2D" />
+      <rect x="4" y="4" width="40" height="40" rx="12" fill="#E8364B" />
       <path d="M16 32L20 16L28 28L36 14" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M12 24H14M34 24H36M24 12V14M24 34V36"
