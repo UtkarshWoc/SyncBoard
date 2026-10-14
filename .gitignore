@@ -20,6 +20,7 @@ e2e/.auth/
 # Logs
 *.log
 npm-debug.log*
+graphify-out/
 
 # OS files
 .DS_Store
