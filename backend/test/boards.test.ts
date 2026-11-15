@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app.js';
+import { Board } from '../src/models/Board.js';
 import { applyElements } from '../src/services/sceneService.js';
 import { element, registerUser, type TestUser } from './helpers.js';
 
@@ -43,6 +44,15 @@ describe('creating and listing boards', () => {
     const mine = await request(app).get('/api/boards').set(owner.auth).expect(200);
     expect(mine.body.owned.map((b: { id: string }) => b.id)).toContain(pub.id);
     expect(mine.body.public.map((b: { id: string }) => b.id)).not.toContain(pub.id);
+  });
+
+  it('excludes inactive listed boards from public list', async () => {
+    const pub = await createBoard({ name: 'Old Inactive Room', listed: true, generalAccess: 'viewer' });
+    const oldDate = new Date(Date.now() - 120_000);
+    await Board.updateOne({ _id: pub.id }, { $set: { createdAt: oldDate, lastActivityAt: oldDate } });
+
+    const lists = await request(app).get('/api/boards').set(student.auth).expect(200);
+    expect(lists.body.public.map((b: { id: string }) => b.id)).not.toContain(pub.id);
   });
 
   it('validates input', async () => {

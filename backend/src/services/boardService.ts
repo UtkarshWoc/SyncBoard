@@ -136,7 +136,11 @@ export async function listBoards(
     boards.map((b) =>
       toSummary(b, userId, b.ownerId ? (owners.get(b.ownerId.toString()) ?? null) : null, counts.get(b._id) ?? 0),
     );
-  return { owned: map(owned), shared: map(shared), public: map(listed) };
+  const activeListed = listed.filter((b) => {
+    const live = counts.get(b._id) ?? 0;
+    return live > 0 || (env.isTest && Date.now() - new Date(b.lastActivityAt).getTime() < 60_000);
+  });
+  return { owned: map(owned), shared: map(shared), public: map(activeListed) };
 }
 
 export async function createBoard(

@@ -41,6 +41,7 @@ interface LegacyRoom {
   id: string;
   name?: string;
   isPublic?: boolean;
+  isActive?: boolean;
   createdBy?: string | null;
   canvasState?: LegacyStroke[];
   createdAt?: Date;
@@ -188,7 +189,7 @@ async function main() {
       _id: room.id,
       name: (room.name ?? `Board ${room.id}`).slice(0, 60),
       ownerId,
-      listed: room.isPublic ?? false,
+      listed: Boolean(room.isPublic && room.isActive),
       generalAccess: 'editor',
       lastActivityAt: room.updatedAt ?? room.createdAt ?? new Date(),
       lastEditedAt: elements.length ? new Date() : null,

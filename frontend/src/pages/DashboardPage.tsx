@@ -137,7 +137,7 @@ function EmptyState({ tab, onCreate }: { tab: Tab; onCreate: () => void }) {
   const copy = {
     owned: ["You haven't created a board yet.", 'Create one for your next lesson — try a template.'],
     shared: ['No boards shared with you yet.', 'Ask your tutor for an invite link or a board code.'],
-    public: ['No public boards right now.', 'Boards that owners list publicly appear here.'],
+    public: ['No active public boards right now.', 'Public boards with active participants appear here.'],
   }[tab];
   return (
     <div className="empty-state glass">
