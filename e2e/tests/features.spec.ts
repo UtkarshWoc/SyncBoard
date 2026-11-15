@@ -147,4 +147,49 @@ test.describe('tutoring features', () => {
     await tutor.context.close();
     await student.context.close();
   });
+
+  test('student can exit room, and tutor can end meeting for everyone', async ({ browser }) => {
+    const tutor = await signUp(browser, 'HostTutor');
+    const student = await signUp(browser, 'LiveStudent');
+
+    // Tutor creates an editable board
+    await tutor.page.goto('/');
+    await tutor.page.locator('#new-board-btn').click();
+    await tutor.page.getByLabel('Board name').fill('Exit Test Board');
+    await tutor.page.getByRole('button', { name: 'Anyone can edit' }).click();
+    await tutor.page.getByRole('button', { name: 'Create board' }).click();
+
+    await expect(tutor.page).toHaveURL(/\/board\/[A-Z0-9]{8}$/);
+    const boardUrl = tutor.page.url();
+    await waitForCanvas(tutor.page);
+
+    // Student joins
+    await student.page.goto(boardUrl);
+    await waitForCanvas(student.page);
+
+    // 1. Student tests the exit flow
+    await student.page.locator('#exit-room-btn').click();
+    await expect(student.page.getByRole('heading', { name: 'Exit room' })).toBeVisible();
+    await student.page.locator('#confirm-exit-btn').click();
+    await expect(student.page).toHaveURL('/');
+
+    // Student re-opens the board
+    await student.page.goto(boardUrl);
+    await waitForCanvas(student.page);
+
+    // 2. Tutor ends the meeting for everyone
+    await tutor.page.locator('#exit-room-btn').click();
+    await expect(tutor.page.getByRole('heading', { name: 'End meeting or exit' })).toBeVisible();
+    await tutor.page.locator('#confirm-end-meeting-btn').click();
+
+    // Tutor returns to dashboard
+    await expect(tutor.page).toHaveURL('/');
+
+    // Student sees "Meeting ended" screen
+    await expect(student.page.getByText('Meeting ended')).toBeVisible({ timeout: 10_000 });
+    await expect(student.page.getByText('The host has ended this meeting for everyone.')).toBeVisible();
+
+    await tutor.context.close();
+    await student.context.close();
+  });
 });

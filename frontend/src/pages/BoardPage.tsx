@@ -87,6 +87,16 @@ export default function BoardPage() {
       </FullPageMessage>
     );
   }
+  if (status.kind === 'ended') {
+    return (
+      <FullPageMessage title="Meeting ended">
+        <p className="muted">The host has ended this meeting for everyone.</p>
+        <Link to="/" className="btn btn-primary">
+          Back to my boards
+        </Link>
+      </FullPageMessage>
+    );
+  }
   if (status.kind === 'error') {
     return (
       <FullPageMessage title="Couldn't open the board">

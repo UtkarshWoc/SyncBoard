@@ -323,4 +323,38 @@ describe('access changes while connected', () => {
     expect(byId.keep?.isDeleted).toBe(false);
     expect(byId.extra?.isDeleted).toBe(true);
   });
+
+  it('lets users leave a board cleanly and updates participants', async () => {
+    const boardId = await boardWith();
+    const t = await open(teacher);
+    const s = await open(student);
+    await call(t, 'board:join', { boardId });
+    await call(s, 'board:join', { boardId });
+
+    const updated = nextEvent<Participant[]>(t, 'participants');
+    const res = await call(s, 'board:leave');
+    expect(res.ok).toBe(true);
+    const participants = await updated;
+    expect(participants.some((p) => p.user.id === student.user.id)).toBe(false);
+  });
+
+  it('allows only the owner to end the meeting for everyone', async () => {
+    const boardId = await boardWith();
+    const t = await open(teacher);
+    const s = await open(student);
+    await call(t, 'board:join', { boardId });
+    await call(s, 'board:join', { boardId });
+
+    // Non-owner cannot end meeting
+    const forbiddenRes = await call(s, 'board:end-meeting');
+    expect(forbiddenRes.ok).toBe(false);
+    expect((forbiddenRes as { error: { code: string } }).error.code).toBe('FORBIDDEN');
+
+    // Owner ends meeting
+    const endedPromise = nextEvent<{ boardId: string }>(s, 'board:meeting-ended');
+    const endRes = await call(t, 'board:end-meeting');
+    expect(endRes.ok).toBe(true);
+    const endedPayload = await endedPromise;
+    expect(endedPayload.boardId).toBe(boardId);
+  });
 });

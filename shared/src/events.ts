@@ -29,6 +29,7 @@ export interface JoinedBoard {
 export interface ClientToServerEvents {
   'board:join': (payload: { boardId: string; password?: string }, ack: Ack<JoinedBoard>) => void;
   'board:leave': (ack?: Ack) => void;
+  'board:end-meeting': (ack?: Ack) => void;
 
   'scene:update': (payload: { elements: SceneElement[] }, ack?: Ack<{ accepted: number; rejected: number }>) => void;
   'presence:update': (payload: PresencePayload) => void;
@@ -58,6 +59,7 @@ export interface ServerToClientEvents {
   'board:updated': (board: BoardSummary) => void;
   'board:role-changed': (payload: { role: Role }) => void;
   'board:removed': (payload: { reason: 'deleted' | 'access-revoked' }) => void;
+  'board:meeting-ended': (payload: { boardId: string }) => void;
   'board:muted': (payload: { mutedUserIds: string[] }) => void;
   'versions:updated': () => void;
 

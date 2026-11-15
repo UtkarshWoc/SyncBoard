@@ -8,6 +8,7 @@ export type SessionStatus =
   | { kind: 'forbidden'; message: string }
   | { kind: 'not-found' }
   | { kind: 'removed'; reason: 'deleted' | 'access-revoked' }
+  | { kind: 'ended' }
   | { kind: 'error'; message: string }
   | { kind: 'ready' };
 
@@ -80,6 +81,7 @@ export function useBoardSession(socket: AppSocket | null, boardId: string, { onR
       setMe((m) => (m ? { ...m, role: r } : m));
     };
     const onRemoved = ({ reason }: { reason: 'deleted' | 'access-revoked' }) => setStatus({ kind: 'removed', reason });
+    const onMeetingEnded = () => setStatus({ kind: 'ended' });
     const onMuted = ({ mutedUserIds: ids }: { mutedUserIds: string[] }) => setMutedUserIds(ids);
 
     socket.on('connect', onConnect);
@@ -88,6 +90,7 @@ export function useBoardSession(socket: AppSocket | null, boardId: string, { onR
     socket.on('board:updated', onBoardUpdated);
     socket.on('board:role-changed', onRoleChanged);
     socket.on('board:removed', onRemoved);
+    socket.on('board:meeting-ended', onMeetingEnded);
     socket.on('board:muted', onMuted);
     if (socket.connected) void join();
 
@@ -98,6 +101,7 @@ export function useBoardSession(socket: AppSocket | null, boardId: string, { onR
       socket.off('board:updated', onBoardUpdated);
       socket.off('board:role-changed', onRoleChanged);
       socket.off('board:removed', onRemoved);
+      socket.off('board:meeting-ended', onMeetingEnded);
       socket.off('board:muted', onMuted);
       if (socket.connected) socket.emit('board:leave');
     };

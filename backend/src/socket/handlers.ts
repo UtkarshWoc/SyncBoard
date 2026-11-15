@@ -188,6 +188,26 @@ export function registerHandlers(io: IO, socket: AppSocket) {
     return null;
   });
 
+  on('board:end-meeting', null, 'misc', async () => {
+    const { boardId } = await requireRole('owner');
+    const room = boardRoom(boardId);
+    log.info({ boardId, userId: socket.data.user.id }, 'Meeting ended by owner');
+    io.to(room).emit('board:meeting-ended', { boardId });
+    io.to(room).emit('rtc:peer-left', { socketId: 'all' });
+    const roomSockets = await io.in(room).fetchSockets();
+    for (const s of roomSockets) {
+      const local = io.of('/').sockets.get(s.id);
+      if (local) {
+        local.data.boardId = null;
+        local.data.role = null;
+        local.data.joinedAt = null;
+        local.data.inCall = false;
+      }
+      await s.leave(room);
+    }
+    return null;
+  });
+
   socket.on('disconnect', (reason) => {
     log.debug({ reason }, 'Socket disconnected');
     leaveBoard().catch((err: unknown) => log.error({ err }, 'Cleanup after disconnect failed'));

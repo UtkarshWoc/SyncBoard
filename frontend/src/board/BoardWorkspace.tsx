@@ -5,7 +5,7 @@ import type { AuthUser, BoardSummary, JoinedBoard, Role } from '@syncboard/share
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import {
-  HiOutlineArrowLeft,
+  HiOutlineArrowRightOnRectangle,
   HiOutlineChatBubbleLeftRight,
   HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineClock,
@@ -13,17 +13,19 @@ import {
   HiOutlineEye,
   HiOutlineMoon,
   HiOutlinePhone,
+  HiOutlinePower,
   HiOutlineShare,
   HiOutlineSquares2X2,
   HiOutlineSun,
   HiOutlineVariable,
 } from 'react-icons/hi2';
+import { Modal } from '../components/ui';
 import { useSocket } from '../context/SocketContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { api, errorMessage } from '../lib/api';
 import { env } from '../lib/env';
-import type { AppSocket } from '../lib/socket';
+import { emitWithAck, type AppSocket } from '../lib/socket';
 import { copyText, boardUrl } from '../lib/util';
 import { CallDock } from './call/CallDock';
 import { useCall } from './call/useCall';
@@ -42,7 +44,7 @@ import { VersionsDialog } from './versions/VersionsDialog';
 
 const THUMBNAIL_EVERY_MS = 45_000;
 
-type Dialog = 'share' | 'versions' | 'templates' | 'equation' | null;
+type Dialog = 'share' | 'versions' | 'templates' | 'equation' | 'exit' | null;
 
 interface Props {
   socket: AppSocket;
@@ -166,6 +168,31 @@ export function BoardWorkspace({
   const onCommentCount = useCallback((n: number) => setOpenComments(n), []);
   const inCallCount = session.participants.filter((p) => p.inCall).length;
 
+  const [endingMeeting, setEndingMeeting] = useState(false);
+
+  const onLeaveRoom = () => {
+    call.leave();
+    navigate('/');
+  };
+
+  const onEndMeeting = async () => {
+    setEndingMeeting(true);
+    call.leave();
+    try {
+      const res = await emitWithAck(socket, 'board:end-meeting');
+      if (res.ok) {
+        toast('Meeting ended', 'info');
+        navigate('/');
+      } else {
+        toast(res.error.message || 'Could not end meeting', 'error');
+        setEndingMeeting(false);
+      }
+    } catch (err) {
+      toast(errorMessage(err, 'Could not end meeting'), 'error');
+      setEndingMeeting(false);
+    }
+  };
+
   const renderTopRightUI = () => (
     <div className="board-toolbar">
       <button
@@ -195,6 +222,16 @@ export function BoardWorkspace({
       <button className="tb-btn primary" onClick={() => setDialog('share')} title="Share">
         <HiOutlineShare />
         <span className="hide-sm">Share</span>
+      </button>
+      <button
+        className="tb-btn danger-hover"
+        onClick={() => setDialog('exit')}
+        title={role === 'owner' ? 'End meeting or leave' : 'Exit room'}
+        aria-label={role === 'owner' ? 'End meeting or leave' : 'Exit room'}
+        id="exit-room-btn"
+      >
+        <HiOutlineArrowRightOnRectangle />
+        <span className="hide-sm">{role === 'owner' ? 'End meeting' : 'Exit'}</span>
       </button>
     </div>
   );
@@ -254,9 +291,14 @@ export function BoardWorkspace({
           }}
         >
           <MainMenu>
-            <MainMenu.Item icon={<HiOutlineArrowLeft />} onSelect={() => navigate('/')}>
-              Back to my boards
+            <MainMenu.Item icon={<HiOutlineArrowRightOnRectangle />} onSelect={() => setDialog('exit')}>
+              {role === 'owner' ? 'Exit or end meeting…' : 'Exit room'}
             </MainMenu.Item>
+            {role === 'owner' && (
+              <MainMenu.Item icon={<HiOutlinePower />} onSelect={() => setDialog('exit')}>
+                End meeting for everyone…
+              </MainMenu.Item>
+            )}
             <MainMenu.Separator />
             {canEdit && (
               <>
@@ -404,6 +446,53 @@ export function BoardWorkspace({
       )}
       {dialog === 'templates' && excalidraw && <TemplatesDialog api={excalidraw} onClose={() => setDialog(null)} />}
       {dialog === 'equation' && excalidraw && <EquationDialog api={excalidraw} onClose={() => setDialog(null)} />}
+      {dialog === 'exit' && (
+        <Modal title={role === 'owner' ? 'End meeting or exit' : 'Exit room'} onClose={() => setDialog(null)}>
+          {role === 'owner' ? (
+            <div className="stack gap-md" style={{ padding: '4px 0' }}>
+              <p className="muted">
+                You are the host of <strong>{board.name}</strong>. Choose whether to end the session for all
+                participants or just exit yourself.
+              </p>
+              <div className="stack gap">
+                <button
+                  className="btn btn-danger btn-block"
+                  onClick={() => void onEndMeeting()}
+                  disabled={endingMeeting}
+                  id="confirm-end-meeting-btn"
+                >
+                  <HiOutlinePower /> {endingMeeting ? 'Ending meeting…' : 'End meeting for all'}
+                </button>
+                <p className="small muted">
+                  Disconnects all participants, ends any active call, and returns everyone to their dashboard.
+                </p>
+              </div>
+              <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
+              <div className="stack gap">
+                <button className="btn btn-ghost btn-block" onClick={onLeaveRoom} id="confirm-leave-room-btn">
+                  <HiOutlineArrowRightOnRectangle /> Just leave room
+                </button>
+                <p className="small muted">Leave the board yourself. Other participants will stay on the board.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="stack gap-md" style={{ padding: '4px 0' }}>
+              <p className="muted">
+                Are you sure you want to exit <strong>{board.name}</strong>? Any active call will be disconnected and
+                you'll return to your dashboard.
+              </p>
+              <div className="row gap justify-end" style={{ marginTop: '1rem' }}>
+                <button className="btn btn-ghost" onClick={() => setDialog(null)}>
+                  Stay
+                </button>
+                <button className="btn btn-danger" onClick={onLeaveRoom} id="confirm-exit-btn">
+                  <HiOutlineArrowRightOnRectangle /> Exit room
+                </button>
+              </div>
+            </div>
+          )}
+        </Modal>
+      )}
     </div>
   );
 }
