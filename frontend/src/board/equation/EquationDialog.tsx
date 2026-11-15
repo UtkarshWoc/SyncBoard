@@ -19,8 +19,16 @@ const COLORS = ['#1e1e1e', '#e03131', '#1971c2', '#2f9e44'];
 type Renderer = (latex: string, color: string) => RenderedEquation;
 
 async function sha1(text: string): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  if (typeof crypto !== 'undefined' && crypto.subtle?.digest) {
+    const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text));
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = (hash << 5) - hash + text.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'eq_' + Math.abs(hash).toString(16) + '_' + Date.now().toString(16);
 }
 
 function svgToDataURL(svg: string): string {

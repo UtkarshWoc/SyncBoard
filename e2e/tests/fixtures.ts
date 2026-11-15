@@ -48,3 +48,8 @@ export async function drawRectangle(page: Page, from: [number, number], to: [num
   await page.mouse.move(...to, { steps: 4 });
   await page.mouse.up();
 }
+
+export async function accessToken(page: Page): Promise<string> {
+  const res = await page.request.post('/api/auth/refresh', { headers: { 'X-Requested-With': 'syncboard' } });
+  return ((await res.json()) as { accessToken: string }).accessToken;
+}
