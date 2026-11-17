@@ -8,6 +8,7 @@ const base = (): CookieOptions => ({
   secure: env.cookieSecure,
   sameSite: env.COOKIE_SAMESITE,
   path: '/api/auth',
+  ...(env.COOKIE_SAMESITE === 'none' && { partitioned: true }),
   ...(env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }),
 });
 

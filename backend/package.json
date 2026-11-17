@@ -6,6 +6,7 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
+    "prebuild": "npm run build -w @syncboard/shared",
     "dev": "tsx watch --clear-screen=false --import ./src/instrument.ts src/server.ts",
     "build": "tsc -p tsconfig.build.json",
     "start": "node --import ./dist/instrument.js dist/server.js",

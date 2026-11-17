@@ -59,7 +59,7 @@ const schema = z
   .transform((raw) => {
     const isProd = raw.NODE_ENV === 'production';
     const corsOrigins = raw.CORS_ORIGIN.split(',')
-      .map((s) => s.trim())
+      .map((s) => s.trim().replace(/\/+$/, ''))
       .filter(Boolean);
     const placeholderGoogle = !raw.GOOGLE_CLIENT_ID || raw.GOOGLE_CLIENT_ID === 'your-google-client-id-here';
     return {
@@ -67,7 +67,7 @@ const schema = z
       isProd,
       isTest: raw.NODE_ENV === 'test',
       corsOrigins,
-      appUrl: (raw.APP_URL ?? corsOrigins[0] ?? 'http://localhost:5173').replace(/\/$/, ''),
+      appUrl: (raw.APP_URL ?? corsOrigins[0] ?? 'http://localhost:5173').replace(/\/+$/, ''),
       jwtSecret: raw.JWT_ACCESS_SECRET ?? raw.JWT_SECRET ?? DEV_SECRET,
       cookieSecure: raw.COOKIE_SECURE ?? isProd,
       googleClientId: placeholderGoogle ? undefined : raw.GOOGLE_CLIENT_ID,

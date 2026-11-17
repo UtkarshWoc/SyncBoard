@@ -12,12 +12,24 @@ function parseIceServers(raw: string | undefined): RTCIceServer[] {
   }
 }
 
+export function normalizeApiBase(raw: string | undefined): string {
+  const trimmed = raw?.trim();
+  if (!trimmed) return '/api';
+  const clean = trimmed.replace(/\/+$/, '');
+  return /^https?:\/\/[^/]+$/.test(clean) ? `${clean}/api` : clean;
+}
+
+export function normalizeSocketUrl(raw: string | undefined): string | undefined {
+  const trimmed = raw?.trim();
+  return trimmed ? trimmed.replace(/\/+$/, '') : undefined;
+}
+
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 
 export const env = {
-  API_BASE_URL: ((import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api').replace(/\/$/, ''),
+  API_BASE_URL: normalizeApiBase(import.meta.env.VITE_API_BASE_URL as string | undefined),
   /** Undefined means "same origin". */
-  SOCKET_URL: (import.meta.env.VITE_SOCKET_URL as string | undefined) || undefined,
+  SOCKET_URL: normalizeSocketUrl(import.meta.env.VITE_SOCKET_URL as string | undefined),
   APP_NAME: (import.meta.env.VITE_APP_NAME as string | undefined) || 'SyncBoard',
   GOOGLE_CLIENT_ID: googleClientId && googleClientId !== 'your-google-client-id-here' ? googleClientId : undefined,
   ICE_SERVERS: parseIceServers(import.meta.env.VITE_ICE_SERVERS as string | undefined),

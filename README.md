@@ -853,11 +853,11 @@ flowchart LR
 2. Select **Runtime**: `Node`.
 3. Set **Build Command**:
    ```bash
-   npm ci && npm run build -w @syncboard/shared && npm run build -w @syncboard/backend
+   npm ci && npm run build:backend
    ```
 4. Set **Start Command**:
    ```bash
-   npm start -w @syncboard/backend
+   npm run start:backend
    ```
 5. Configure Environment Variables:
    - `NODE_ENV=production`
@@ -873,12 +873,12 @@ flowchart LR
 #### 2. Deploy the Frontend (on Vercel)
 
 1. Import your GitHub repository into Vercel.
-2. Set **Root Directory**: `frontend`.
-3. Set **Framework Preset**: `Vite`.
-4. Configure Environment Variables:
+2. Leave **Root Directory** as repository root (a pre-configured [vercel.json](file:///c:/Users/utkar/SyncBoard/vercel.json) handles monorepo build and SPA routing automatically).
+   - Alternatively, if setting Root Directory to `frontend`, the project will run the package `build` script.
+3. Configure Environment Variables:
    - `VITE_API_BASE_URL=https://your-backend-api.onrender.com/api`
    - `VITE_SOCKET_URL=https://your-backend-api.onrender.com`
-5. Click **Deploy**.
+4. Click **Deploy**.
 
 ---
 
