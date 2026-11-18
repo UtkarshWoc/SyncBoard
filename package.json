@@ -1,5 +1,55 @@
 {
+  "name": "syncboard",
+  "private": true,
+  "description": "SyncBoard — real-time collaborative whiteboard for tutoring and teaching",
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend",
+    "e2e"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run build -w @syncboard/shared && concurrently -n api,web -c red,gray \"npm run dev -w @syncboard/backend\" \"npm run dev -w @syncboard/frontend\"",
+    "build": "npm run build -w @syncboard/shared && npm run build -w @syncboard/backend && npm run build -w @syncboard/frontend",
+    "build:shared": "npm run build -w @syncboard/shared",
+    "build:backend": "npm run build -w @syncboard/shared && npm run build -w @syncboard/backend",
+    "build:frontend": "npm run build -w @syncboard/shared && npm run build -w @syncboard/frontend",
+    "start": "npm start -w @syncboard/backend",
+    "start:backend": "npm start -w @syncboard/backend",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run e2e -w @syncboard/e2e-tests"
+  },
   "dependencies": {
-    "@vercel/analytics": "^2.0.1"
+    "typescript": "~5.9.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^16.5.0",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.46.0"
+  },
+  "overrides": {
+    "lodash-es": "^4.18.1",
+    "katex": "^0.19.0",
+    "@excalidraw/excalidraw": {
+      "nanoid": "3.3.20"
+    },
+    "@excalidraw/mermaid-to-excalidraw": {
+      "nanoid": "^5.1.16"
+    },
+    "@xmldom/xmldom": "^0.9.12",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }

@@ -9,10 +9,18 @@ node_modules/
 # Build output
 dist/
 build/
+coverage/
+*.tsbuildinfo
+
+# Playwright
+e2e/test-results/
+e2e/playwright-report/
+e2e/.auth/
 
 # Logs
 *.log
 npm-debug.log*
+graphify-out/
 
 # OS files
 .DS_Store
@@ -23,3 +31,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Local browser automation artifacts
+.playwright-mcp/
+backend/.dev-db/
